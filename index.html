@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#0a0a0f">
+<title>ROCKET — 6Б</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- ═══════════ АВТОРИЗАЦИЯ ═══════════ -->
+  <section id="screen-login" class="screen active">
+    <div class="auth-wrap">
+      <div class="auth-bg"></div>
+      <div class="auth-card">
+        <div class="auth-logo">🚀</div>
+        <h1>ROCKET</h1>
+        <p class="auth-sub">Мессенджер группы 6Б</p>
+        <input id="in-code" class="input" type="tel" inputmode="numeric"
+               placeholder="Кодовый номер" maxlength="8" autocomplete="off">
+        <button id="btn-login" class="btn primary">Войти / Регистрация</button>
+        <p id="login-msg" class="msg-line"></p>
+        <div class="auth-hint">
+          <span>🛡️ 2670 · 👥 1919 · 💣 6767</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="screen-register" class="screen">
+    <div class="auth-wrap">
+      <div class="auth-bg"></div>
+      <div class="auth-card">
+        <div class="auth-logo">🚀</div>
+        <h2>Новый аккаунт</h2>
+        <p class="auth-sub">Код: <b id="reg-code"></b></p>
+        <input id="in-nick" class="input" type="text" placeholder="Ваш ник" maxlength="20" autocomplete="off">
+        <input id="in-pass" class="input" type="password" placeholder="Пароль (мин. 6)" autocomplete="new-password">
+        <input id="in-pass2" class="input" type="password" placeholder="Повторите пароль" autocomplete="new-password">
+        <button id="btn-register" class="btn primary">Создать</button>
+        <button id="btn-back" class="btn ghost">← Назад</button>
+        <p id="reg-msg" class="msg-line"></p>
+      </div>
+    </div>
+  </section>
+
+  <section id="screen-pending" class="screen">
+    <div class="auth-wrap">
+      <div class="auth-bg"></div>
+      <div class="auth-card">
+        <div class="auth-logo pulse">⏳</div>
+        <h2>Ожидание подтверждения</h2>
+        <p class="auth-sub">Администратор (код <b>2670</b>) должен подтвердить ваш аккаунт.</p>
+        <div class="pending-dots"><span></span><span></span><span></span></div>
+        <button id="btn-pending-back" class="btn ghost">← Сменить аккаунт</button>
+        <p id="pending-msg" class="msg-line ok">Ваша заявка в очереди…</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ ОСНОВНОЙ ИНТЕРФЕЙС ═══════════ -->
+  <section id="screen-app" class="screen">
+    <div class="layout" id="layout">
+
+      <!-- 1. ГИЛДЫ -->
+      <aside class="guilds" id="guilds">
+        <div class="guild-logo active" title="6Б"><span>6Б</span></div>
+        <div class="guild-sep"></div>
+        <div class="guild-add" id="guild-add" title="Инфо">+</div>
+        <div class="guild-spacer"></div>
+        <button class="guild-icon" id="guild-theme" title="Тема">🌙</button>
+        <button class="guild-icon" id="guild-admin" title="Админ" style="display:none">🛡️</button>
+      </aside>
+
+      <!-- 2. КАНАЛЫ -->
+      <aside class="channels" id="channels">
+        <div class="channels-head">
+          <span class="server-name">🏫 Группа 6Б</span>
+          <button class="icon-btn small mobile-only" id="close-channels">✕</button>
+        </div>
+
+        <div class="channels-scroll">
+          <div class="channels-category">КАНАЛЫ</div>
+          <button class="channel active" data-channel="text">
+            <span class="hash">#</span>
+            <span class="ch-name">общий-чат</span>
+          </button>
+
+          <div class="channels-category">
+            УЧАСТНИКИ <span id="mini-count" class="cat-count">0</span>
+          </div>
+          <div id="mini-users" class="mini-users"></div>
+        </div>
+
+        <div class="channels-foot">
+          <div class="avatar small" id="me-avatar">?</div>
+          <div class="me-info">
+            <div id="me-nick" class="me-nick">—</div>
+            <div id="me-status" class="me-status">—</div>
+          </div>
+          <button class="icon-btn small" id="drawer-logout" title="Выйти">⎋</button>
+        </div>
+      </aside>
+
+      <!-- 3. ЧАТ -->
+      <main class="chat">
+        <header class="chat-head">
+          <button class="icon-btn mobile-only" id="toggle-side" title="Каналы">☰</button>
+          <div class="chat-head-title">
+            <span class="hash big">#</span>
+            <span id="channel-title">общий-чат</span>
+            <span id="chat-status" class="chat-status"></span>
+          </div>
+          <div class="chat-head-actions">
+            <button class="icon-btn" id="jump-bottom" title="Вниз" style="display:none">⬇</button>
+            <button class="icon-btn mobile-only" id="toggle-members" title="Участники">👥</button>
+          </div>
+        </header>
+
+        <div id="messages" class="messages"></div>
+
+        <div id="typing-indicator" class="typing-indicator" hidden></div>
+
+        <div id="circle-recorder" class="circle-recorder" hidden>
+          <video id="rec-preview" autoplay playsinline muted></video>
+          <div class="rec-controls">
+            <button class="rec-btn cancel" id="rec-cancel">✕</button>
+            <div class="rec-timer" id="rec-timer">00:00</div>
+            <button class="rec-btn send" id="rec-send">➤</button>
+          </div>
+        </div>
+
+        <footer class="composer">
+          <label for="file-input" class="icon-btn attach" title="Фото">📎</label>
+          <input id="file-input" type="file" accept="image/*" hidden>
+          <button class="icon-btn circle-btn" id="btn-circle" title="Кружочек">🎥</button>
+          <input id="msg-input" class="input-msg" type="text"
+                 placeholder="Написать в #общий-чат" autocomplete="off">
+          <button id="btn-send" class="icon-btn send" title="Отправить">➤</button>
+        </footer>
+      </main>
+
+      <!-- 4. УЧАСТНИКИ СПРАВА -->
+      <aside class="members" id="members-panel">
+        <div class="members-head">
+          Участники — <span id="members-count">0</span>
+          <button class="icon-btn small mobile-only" id="close-members">✕</button>
+        </div>
+        <div id="members-list" class="members-list"></div>
+      </aside>
+    </div>
+
+    <div class="mobile-overlay" id="mobile-overlay"></div>
+  </section>
+
+  <!-- ═══════════ АДМИН-ПАНЕЛЬ ═══════════ -->
+  <section id="screen-admin" class="screen">
+    <header class="chat-head">
+      <button class="icon-btn" id="admin-back">←</button>
+      <div class="chat-head-title"><span>🛡️ Админ-панель</span></div>
+      <button class="icon-btn" id="admin-refresh">⟳</button>
+    </header>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="requests">⏳ Заявки <span id="req-badge" class="tab-badge">0</span></button>
+      <button class="tab" data-tab="users">👥 Все юзеры</button>
+      <button class="tab" data-tab="audit">📊 Аудит</button>
+    </div>
+
+    <div id="tab-requests" class="tab-panel active">
+      <div id="requests-list" class="list"></div>
+    </div>
+    <div id="tab-users" class="tab-panel">
+      <div id="admin-users-list" class="list"></div>
+    </div>
+    <div id="tab-audit" class="tab-panel">
+      <div id="audit-list" class="list"></div>
+    </div>
+  </section>
+
+  <div id="toast" class="toast"></div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script src="crypto.js"></script>
+<script src="storage.js"></script>
+<script src="users.js"></script>
+<script src="audit.js"></script>
+<script src="firebase.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
